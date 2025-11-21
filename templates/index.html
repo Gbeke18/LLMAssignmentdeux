@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Groq LLM Q&A</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>LLM Q&A (Groq Edition)</h1>
+
+        <form id="qa-form">
+            <textarea name="question" id="question" placeholder="Enter your question..."></textarea>
+            <button type="submit">Ask</button>
+        </form>
+
+        <div id="result" class="hidden">
+            <h2>Answer</h2>
+            <pre id="answer-text"></pre>
+
+            <h3>Processed Question</h3>
+            <pre id="processed"></pre>
+
+            <h3>Tokens</h3>
+            <pre id="tokens"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("qa-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const res = await fetch("/ask", { method: "POST", body: formData });
+            const data = await res.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            document.getElementById("result").classList.remove("hidden");
+
+            document.getElementById("answer-text").textContent = data.answer;
+            document.getElementById("processed").textContent = data.processed;
+            document.getElementById("tokens").textContent = JSON.stringify(data.tokens, null, 2);
+        });
+    </script>
+</body>
+</html>
